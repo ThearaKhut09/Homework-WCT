@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Management</title>
+    <style>
+        /* Styling for better UI */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 8px 12px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .btn-edit {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            table, th, td {
+                font-size: 14px;
+            }
+            .form-container input, .form-container button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>Classroom Management</h2>
+    
+    <div class="form-container">
+        <h3>Add New Student</h3>
+        <form id="studentForm">
+            <input type="text" id="studentName" placeholder="Student Name" required>
+            <input type="text" id="studentAge" placeholder="Age" required>
+            <input type="text" id="studentClass" placeholder="Class" required>
+            <button type="submit" class="btn">Add Student</button>
+        </form>
+    </div>
+
+    <h3>All Students</h3>
+    <table id="studentsTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Class</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Student rows will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Array to store student data
+        let students = [];
+
+        // Function to display all students in the table
+        function displayStudents() {
+            const tableBody = document.querySelector("#studentsTable tbody");
+            tableBody.innerHTML = ''; // Clear current rows
+            students.forEach((student, index) => {
+                const row = document.createElement("tr");
+
+                const nameCell = document.createElement("td");
+                nameCell.textContent = student.name;
+                row.appendChild(nameCell);
+
+                const ageCell = document.createElement("td");
+                ageCell.textContent = student.age;
+                row.appendChild(ageCell);
+
+                const classCell = document.createElement("td");
+                classCell.textContent = student.class;
+                row.appendChild(classCell);
+
+                const actionsCell = document.createElement("td");
+
+                const editButton = document.createElement("button");
+                editButton.textContent = "Edit";
+                editButton.classList.add("btn", "btn-edit");
+                editButton.onclick = () => editStudent(index);
+                actionsCell.appendChild(editButton);
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.classList.add("btn", "btn-delete");
+                deleteButton.onclick = () => deleteStudent(index);
+                actionsCell.appendChild(deleteButton);
+
+                row.appendChild(actionsCell);
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to add a student
+        function addStudent(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const name = document.querySelector("#studentName").value;
+            const age = document.querySelector("#studentAge").value;
+            const studentClass = document.querySelector("#studentClass").value;
+
+            if (name && age && studentClass) {
+                const newStudent = { name, age, class: studentClass };
+                students.push(newStudent);
+                displayStudents();
+
+                // Reset the form
+                document.querySelector("#studentForm").reset();
+            }
+        }
+
+        // Function to edit a student
+        function editStudent(index) {
+            const student = students[index];
+            document.querySelector("#studentName").value = student.name;
+            document.querySelector("#studentAge").value = student.age;
+            document.querySelector("#studentClass").value = student.class;
+
+            // Update the form submission to edit the student
+            const form = document.querySelector("#studentForm");
+            form.onsubmit = function (event) {
+                event.preventDefault();
+
+                students[index] = {
+                    name: document.querySelector("#studentName").value,
+                    age: document.querySelector("#studentAge").value,
+                    class: document.querySelector("#studentClass").value,
+                };
+                displayStudents();
+
+                // Reset the form and default to adding student
+                form.reset();
+                form.onsubmit = addStudent;
+            };
+        }
+
+        // Function to delete a student
+        function deleteStudent(index) {
+            students.splice(index, 1);
+            displayStudents();
+        }
+
+        // Set up event listener for the form submission
+        document.querySelector("#studentForm").addEventListener("submit", addStudent);
+
+        // Initial call to display the students (if any)
+        displayStudents();
+    </script>
+</body>
+</html>
